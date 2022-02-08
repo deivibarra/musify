@@ -8,6 +8,7 @@ var bcrypt = require('bcrypt-nodejs');
 
 //Importar libreria JWT para tokens
 var jwt = require('../services/jwt');
+const { restart } = require('nodemon');
 
 function test(req, res){
     res.status(200).send({message:"Probando controller del User"});
@@ -84,8 +85,35 @@ function loginUser(req, res)
 
 }
 
+function updateUser(req, res){
+    var userId = req.params.id;
+    var update = req.body;
+
+    User.findByIdAndUpdate(userId, update,(err, userUpdate)=>{
+        if(err){
+            res.status(500).send({
+                message: "Error de servidor"
+            });
+        }else{
+            if(!userUpdate){
+                res.status(404).send({
+                    message: "No se encontrol el usuario"
+                });
+            }
+            else
+            {
+                restart.status(200).send({
+                    user: userUpdate
+                });
+            }
+        }
+    } );
+
+}
+
 module.exports={ 
     test, 
     saveUser, 
-    loginUser
+    loginUser,
+    updateUser
 }
