@@ -16,6 +16,7 @@ app.get('/test',function(req, res){
 
 //Routes
 var user_routes = require('./routes/user');
+var artist_routes = require('./routes/artist');
 
 //Headers HTTP
 
@@ -23,6 +24,7 @@ var user_routes = require('./routes/user');
 
 //Base
 app.use('/api', user_routes);
+app.use('/api', artist_routes);
 
 
 module.exports = app;
