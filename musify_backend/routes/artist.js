@@ -23,8 +23,8 @@ api.get('/artist/:id', md.ensureAuth, ArtistController.getArtist);
 api.get('/artists/:page?', md.ensureAuth, ArtistController.getArtists);
 api.put('/artist/:id', md.ensureAuth, ArtistController.updateArtist);
 api.delete('/artist/:id', md.ensureAuth,  ArtistController.deleteArtist);
-api.post('/update-imagen/:id', [md.ensureAuth, md_upload], ArtistController.uploadImagen);
-api.get('/get-imagen.artist/:imageFile', ArtistController.getImagenFile);
+api.post('/update-imagen-artist/:id', [md.ensureAuth, md_upload], ArtistController.uploadImagen);
+api.get('/get-imagen-artist/:imageFile', ArtistController.getImagenFile);
 
 
 module.exports = api;

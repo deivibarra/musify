@@ -95,7 +95,6 @@ function updateSong(req, res){
     var update = req.body;
 
     Song.findByIdAndUpdate(songId, update,(err, songUpdate)=>{
-       // console.log(userUpdate);
         if(err){
             res.status(500).send({
                 message: "Error de servidor"
