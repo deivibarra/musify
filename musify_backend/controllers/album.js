@@ -177,22 +177,41 @@ function getImagenFile(req, res){
 
 function deleteAlbum(req, res){
     var albumId = req.params.id;
-    Album.findByIdAndRemove(albumId, (err, docs)=> {
+    Album.findByIdAndRemove(albumId, (err, albumDelete)=> {
         if(err){
             res.status(500).send({
                 message: "Error de servidor"
             });
         }else{
-            if(!docs){
+            if(!albumDelete){
                 res.status(404).send({
                     message: "No se encontrol el album"
                 });
             }
             else
             {
-                res.status(200).send({
-                    album: docs
+                Song.findByIdAndRemove({album:albumDelete.id}, (err, songDelete)=> {
+                    if(err){
+                        res.status(500).send({
+                            message: "Error de servidor"
+                        });
+                    }else{
+                        if(!songDelete){
+                            res.status(404).send({
+                                message: "No se encontrol el song"
+                            });
+                        }
+                        else
+                        {
+                            res.status(200).send({
+                                song: songDelete
+                            });
+                        }
+                    }
                 });
+                //res.status(200).send({
+                //    album: albumDelete
+                //});
             }
         }
     });
