@@ -5,11 +5,6 @@ var Artist = require('../models/artist');
 var Song = require('../models/song');
 var Album = require('../models/album');
 
-//Importar Librerias para Incriptar Contraseña
-var bcrypt = require('bcrypt-nodejs');
-
-//Importar libreria JWT para tokens
-var jwt = require('../services/jwt');
 
 //Importar libreria Manejo de Archivo
 var fs = require('fs');
@@ -97,13 +92,13 @@ function updateArtist(req, res){
     var update = req.body;
 
     Artist.findByIdAndUpdate(artistId, update,(err, artistUpdate)=>{
-       // console.log(userUpdate);
+       // console.log(artistUpdate);
         if(err){
             res.status(500).send({
                 message: "Error de servidor"
             });
         }else{
-            if(!userUpdate){
+            if(!artistUpdate){
                 res.status(404).send({
                     message: "No se encontrol el artist"
                 });
@@ -138,9 +133,9 @@ function uploadImagen(req,res){
                     message: "Error de servidor"
                 });
             }else{
-                if(!userUpdate){
+                if(!artistUpdate){
                     res.status(404).send({
-                        message: "No se encontrol el usuario"
+                        message: "No se encontrol el artista"
                     });
                 }
                 else
@@ -179,22 +174,60 @@ function getImagenFile(req, res){
 
 function deleteArtist(req, res){
     var artistId = req.params.id;
-    Artist.findByIdAndRemove(artistId, (err, docs)=> {
+    Artist.findByIdAndRemove(artistId, (err, artistDelete)=> {
         if(err){
             res.status(500).send({
                 message: "Error de servidor"
             });
         }else{
-            if(!docs){
+            if(!artistDelete){
                 res.status(404).send({
                     message: "No se encontrol el artist"
                 });
             }
             else
             {
-                res.status(200).send({
-                    artist: docs
+                Album.findByIdAndRemove({artist:artistDelete.id}, (err, albumDelete)=> {
+                    if(err){
+                        res.status(500).send({
+                            message: "Error de servidor"
+                        });
+                    }else{
+                        if(!albumDelete){
+                            res.status(404).send({
+                                message: "No se encontrol el album"
+                            });
+                        }
+                        else
+                        {
+                            Song.findByIdAndRemove({album:albumDelete.id}, (err, songDelete)=> {
+                                if(err){
+                                    res.status(500).send({
+                                        message: "Error de servidor"
+                                    });
+                                }else{
+                                    if(!songDelete){
+                                        res.status(404).send({
+                                            message: "No se encontrol el song"
+                                        });
+                                    }
+                                    else
+                                    {
+                                        res.status(200).send({
+                                            song: songDelete
+                                        });
+                                    }
+                                }
+                            });
+                            //res.status(200).send({
+                            //    album: albumDelete
+                            //});
+                        }
+                    }
                 });
+                //res.status(200).send({
+                //    artist: artistDelete
+                //});
             }
         }
     });
