@@ -1,7 +1,6 @@
 'use strict'
 
 //Imporar el modelo album
-var Artist = require('../models/artist');
 var Song = require('../models/song');
 var Album = require('../models/album');
 
@@ -74,7 +73,6 @@ function getAlbums(req, res)
     }
 
     var itemPerPage = 4;
-  //  console.log('aqui');
     
     Album.find().sort('title').paginate(page, itemPerPage,function(err, albums, total){
     if(err){
@@ -95,13 +93,12 @@ function updateAlbum(req, res){
     var update = req.body;
 
     Album.findByIdAndUpdate(albumId, update,(err, albumUpdate)=>{
-       // console.log(userUpdate);
         if(err){
             res.status(500).send({
                 message: "Error de servidor"
             });
         }else{
-            if(!userUpdate){
+            if(!albumUpdate){
                 res.status(404).send({
                     message: "No se encontrol el album"
                 });
@@ -136,7 +133,7 @@ function uploadImagen(req,res){
                     message: "Error de servidor"
                 });
             }else{
-                if(!userUpdate){
+                if(!albumUpdate){
                     res.status(404).send({
                         message: "No se encontrol el usuario"
                     });

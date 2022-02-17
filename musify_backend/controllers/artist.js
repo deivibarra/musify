@@ -173,11 +173,13 @@ function getImagenFile(req, res){
 }
 
 function deleteArtist(req, res){
+    console.log('0');
     var artistId = req.params.id;
     Artist.findByIdAndRemove(artistId, (err, artistDelete)=> {
+        console.log('1');
         if(err){
             res.status(500).send({
-                message: "Error de servidor"
+                message: "Error de servidor Artist"
             });
         }else{
             if(!artistDelete){
@@ -187,28 +189,29 @@ function deleteArtist(req, res){
             }
             else
             {
-                Album.findByIdAndRemove({artist:artistDelete.id}, (err, albumDelete)=> {
+                console.log('2');
+                Album.findByIdAndRemove({artist:artistDelete._id}, (err, albumDelete)=> {
                     if(err){
                         res.status(500).send({
-                            message: "Error de servidor"
+                            message: "Error de servidor Album"
                         });
                     }else{
                         if(!albumDelete){
                             res.status(404).send({
-                                message: "No se encontrol el album"
+                                message: "No se encontrol el Album"
                             });
                         }
                         else
                         {
-                            Song.findByIdAndRemove({album:albumDelete.id}, (err, songDelete)=> {
+                            Song.findByIdAndRemove({album:albumDelete._id}, (err, songDelete)=> {
                                 if(err){
                                     res.status(500).send({
-                                        message: "Error de servidor"
+                                        message: "Error de servidor Song"
                                     });
                                 }else{
                                     if(!songDelete){
                                         res.status(404).send({
-                                            message: "No se encontrol el song"
+                                            message: "No se encontrol el Song"
                                         });
                                     }
                                     else

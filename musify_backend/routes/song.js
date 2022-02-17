@@ -23,7 +23,7 @@ api.get('/song/:id', md.ensureAuth, SongController.getSong);
 api.get('/songs/:page?', md.ensureAuth, SongController.getSongs);
 api.put('/song/:id', md.ensureAuth, SongController.updateSong);
 api.delete('/song/:id', md.ensureAuth,  SongController.deleteSong);
-api.post('/update-imagen/:id', [md.ensureAuth, md_upload], SongController.uploadImagen);
+api.post('/update-file/:id', [md.ensureAuth, md_upload], SongController.uploadFile);
 api.get('/get-imagen.song/:imageFile', SongController.getImagenFile);
 
 

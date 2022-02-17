@@ -1,8 +1,6 @@
 'use strict'
 
 //Imporar el modelo song
-var Artist = require('../models/song');
-var Song = require('../models/song');
 var Song = require('../models/song');
 
 
@@ -74,7 +72,6 @@ function getSongs(req, res)
     }
 
     var itemPerPage = 4;
-    //console.log('aqui');
     
     Song.find().sort('name').paginate(page, itemPerPage,function(err, songs, total){
     if(err){
@@ -100,7 +97,7 @@ function updateSong(req, res){
                 message: "Error de servidor"
             });
         }else{
-            if(!userUpdate){
+            if(!songUpdate){
                 res.status(404).send({
                     message: "No se encontrol el song"
                 });
@@ -116,7 +113,7 @@ function updateSong(req, res){
 
 }
 
-function uploadImagen(req,res){
+function uploadFile(req,res){
     var songId = req.params.id;
     var file_name = "sin_nombre";
 
@@ -126,8 +123,8 @@ function uploadImagen(req,res){
     var file_name = file_split[2];
     var ext_split = file_name.split('\.');
     var file_ext = ext_split[1];
-    console.log(file_name);
-    if(file_ext == "png" || file_ext == "gif"|| file_ext == "jpg")
+    //console.log(file_name);
+    if(file_ext == "mp4" || file_ext == "mov"|| file_ext == "wmv"|| file_ext == "avi")
     {
         Song.findByIdAndUpdate(songId,{image: file_name},(err, songUpdate)=>{
             if(err){
@@ -135,9 +132,9 @@ function uploadImagen(req,res){
                     message: "Error de servidor"
                 });
             }else{
-                if(!userUpdate){
+                if(!songUpdate){
                     res.status(404).send({
-                        message: "No se encontrol el usuario"
+                        message: "No se encontrol el archivo"
                     });
                 }
                 else
@@ -151,7 +148,7 @@ function uploadImagen(req,res){
     }
     else{
         res.status(201).send({
-            message: "Formato de imagen invalido solo se permite jpg, gif y png"
+            message: "Formato de imagen invalido solo se permite mp4, mov, wmv y avi"
         });
     }
 
@@ -167,7 +164,7 @@ function getImagenFile(req, res){
         }
         else{
             res.status(404).send({
-                message: "La imagen no se encontro"
+                message: "El archivo no se encontro"
             });
         }
     });
@@ -204,6 +201,6 @@ module.exports={
     getSongs,
     updateSong,
     deleteSong,
-    uploadImagen,
+    uploadFile,
     getImagenFile
 }
