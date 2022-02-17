@@ -195,7 +195,7 @@ function deleteAlbum(req, res){
                     }else{
                         if(!songDelete){
                             res.status(404).send({
-                                message: "No se encontrol el song"
+                                album: albumDelete
                             });
                         }
                         else

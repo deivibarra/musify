@@ -173,10 +173,9 @@ function getImagenFile(req, res){
 }
 
 function deleteArtist(req, res){
-    console.log('0');
+
     var artistId = req.params.id;
     Artist.findByIdAndRemove(artistId, (err, artistDelete)=> {
-        console.log('1');
         if(err){
             res.status(500).send({
                 message: "Error de servidor Artist"
@@ -189,48 +188,37 @@ function deleteArtist(req, res){
             }
             else
             {
-                console.log('2');
-                Album.findByIdAndRemove({artist:artistDelete._id}, (err, albumDelete)=> {
-                    if(err){
-                        res.status(500).send({
-                            message: "Error de servidor Album"
+                Album.findByIdAndRemove(artistDelete._id, (err, albumDelete)=> {
+                if(err){
+                    res.status(500).send({
+                        message: "Error de servidor Album"
+                    });
+                }else{
+                    if(albumDelete){
+                        Song.findByIdAndRemove(albumDelete._id, (err, songDelete)=> {
+                            if(err){
+                                res.status(500).send({
+                                    message: "Error de servidor Song"
+                                });
+                            }
+                            else if(!songDelete){
+                                res.status(200).send({
+                                    album: albumDelete
+                                });
+                            }
+                            else{
+                                res.status(200).send({
+                                    song: songDelete
+                                });
+                            }
                         });
-                    }else{
-                        if(!albumDelete){
-                            res.status(404).send({
-                                message: "No se encontrol el Album"
-                            });
-                        }
-                        else
-                        {
-                            Song.findByIdAndRemove({album:albumDelete._id}, (err, songDelete)=> {
-                                if(err){
-                                    res.status(500).send({
-                                        message: "Error de servidor Song"
-                                    });
-                                }else{
-                                    if(!songDelete){
-                                        res.status(404).send({
-                                            message: "No se encontrol el Song"
-                                        });
-                                    }
-                                    else
-                                    {
-                                        res.status(200).send({
-                                            song: songDelete
-                                        });
-                                    }
-                                }
-                            });
-                            //res.status(200).send({
-                            //    album: albumDelete
-                            //});
-                        }
                     }
-                });
-                //res.status(200).send({
-                //    artist: artistDelete
-                //});
+                    else{
+                        res.status(200).send({
+                            artist: artistDelete
+                        });
+                    }
+                }});
             }
         }
     });
