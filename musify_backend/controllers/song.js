@@ -2,6 +2,7 @@
 
 //Imporar el modelo song
 var Song = require('../models/song');
+var Album = require('../models/album');
 
 
 //Importar libreria Manejo de Archivo
@@ -20,6 +21,7 @@ function test(req, res){
 function saveSong(req, res){
     var song = new Song();
     var params = req.body;
+    var albumId = req.params.id;
 
     //Mapeo de Campos
     song.number = params.number;
@@ -27,22 +29,33 @@ function saveSong(req, res){
     song.duration = params.duration;
     song.file = '';
 
-    if(song.name != null && song.number != null && song.duration != null ){
-        //Guardando el usuario
-        song.save((err,songStored)=>{
-            if(err){
-                res.status(500).send({message:"Error guardando el Song"});
-            }else if(!songStored){
-                res.status(404).send({message:"Error Song no guardado"});
-            }
-            else{
-                res.status(200).send({song:songStored});
-            }
-        });
+    Album.findById(albumId, (err, album)=>{
+    if(err){
+        res.status(500).send({message: "Error en la peticion"});
+    }
+    else if(!album){
+        res.status(404).send({message: "No se encontro el album"});
     }
     else{
-        res.status(201).send({message: "Todos los campos son obligatorios"});
-    }
+        song.album = album;
+            if(song.name != null && song.number != null && song.duration != null ){
+                //Guardando el usuario
+                song.save((err,songStored)=>{
+                    if(err){
+                        res.status(500).send({message:"Error guardando el Song"});
+                    }else if(!songStored){
+                        res.status(404).send({message:"Error Song no guardado"});
+                    }
+                    else{
+                        res.status(200).send({song:songStored});
+                    }
+                });
+            }
+            else{
+                res.status(201).send({message: "Todos los campos son obligatorios"});
+            }
+        }
+    })
 }
 
 function getSong(req, res)
@@ -173,21 +186,23 @@ function getImagenFile(req, res){
 
 function deleteSong(req, res){
     var songId = req.params.id;
-    Song.findByIdAndRemove(songId, (err, docs)=> {
+    Song.findByIdAndRemove(songId, (err, songDelete)=> {
         if(err){
             res.status(500).send({
                 message: "Error de servidor"
             });
         }else{
-            if(!docs){
+            if(!songDelete){
                 res.status(404).send({
                     message: "No se encontrol el song"
                 });
             }
             else
             {
+                if(songDelete.file)
+                    fs.unlink('./uploads/song/' + songDelete.file);
                 res.status(200).send({
-                    song: docs
+                    song: songDelete
                 });
             }
         }

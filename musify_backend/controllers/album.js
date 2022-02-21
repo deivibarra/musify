@@ -1,6 +1,7 @@
 'use strict'
 
 //Imporar el modelo album
+var Artist = require('../models/artist');
 var Song = require('../models/song');
 var Album = require('../models/album');
 
@@ -21,6 +22,7 @@ function test(req, res){
 function saveAlbum(req, res){
     var album = new Album();
     var params = req.body;
+    var artistId = req.params.id;
 
     //Mapeo de Campos
     album.title = params.title;
@@ -28,22 +30,33 @@ function saveAlbum(req, res){
     album.year = params.year;
     album.image = '';
 
-    if(album.title != null && album.description != null && album.year != null ){
-        //Guardando el usuario
-        album.save((err,albumStored)=>{
-            if(err){
-                res.status(500).send({message:"Error guardando el Album"});
-            }else if(!albumStored){
-                res.status(404).send({message:"Error Album no guardado"});
+    Artist.findById(artistId, (err, artist)=>{
+        if(err){
+            res.status(500).send({message: "Error en la peticion"});
+        }
+        else if(!artist){
+            res.status(404).send({message: "No se encontro el artista"});
+        }
+        else{
+            album.artist = artist;
+            if(album.title != null && album.description != null && album.year != null ){
+                //Guardando el usuario
+                album.save((err,albumStored)=>{
+                    if(err){
+                        res.status(500).send({message:"Error guardando el Album"});
+                    }else if(!albumStored){
+                        res.status(404).send({message:"Error Album no guardado"});
+                    }
+                    else{
+                        res.status(200).send({album:albumStored});
+                    }
+                });
             }
             else{
-                res.status(200).send({album:albumStored});
+                res.status(201).send({message: "Todos los campos son obligatorios"});
             }
-        });
-    }
-    else{
-        res.status(201).send({message: "Todos los campos son obligatorios"});
-    }
+        }
+    })
 }
 
 function getAlbum(req, res)
@@ -187,6 +200,10 @@ function deleteAlbum(req, res){
             }
             else
             {
+                //Elimando la Imagen del Album
+                if(albumDelete.image)
+                    fs.unlink('./uploads/album/' + albumDelete.image);
+                //Elimando las Canciones del Album
                 Song.findByIdAndRemove({album:albumDelete.id}, (err, songDelete)=> {
                     if(err){
                         res.status(500).send({
@@ -194,21 +211,20 @@ function deleteAlbum(req, res){
                         });
                     }else{
                         if(!songDelete){
-                            res.status(404).send({
+                            res.status(200).send({
                                 album: albumDelete
                             });
                         }
                         else
                         {
+                            if(songDelete.file)
+                                fs.unlink('./uploads/song/' + songDelete.file);
                             res.status(200).send({
                                 song: songDelete
                             });
                         }
                     }
                 });
-                //res.status(200).send({
-                //    album: albumDelete
-                //});
             }
         }
     });

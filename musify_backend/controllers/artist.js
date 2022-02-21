@@ -188,6 +188,10 @@ function deleteArtist(req, res){
             }
             else
             {
+                //Eliminando la Imgen del Artista
+                if(artistDelete.image)
+                    fs.unlink('./uploads/artist/' + artistDelete.image);
+                //Elimando los albumen del Artista
                 Album.findByIdAndRemove(artistDelete._id, (err, albumDelete)=> {
                 if(err){
                     res.status(500).send({
@@ -195,6 +199,11 @@ function deleteArtist(req, res){
                     });
                 }else{
                     if(albumDelete){
+                        //Eliminando la Imgen del Album del Artista
+                        if(albumDelete.image)
+                            fs.unlink('./uploads/album/' + albumDelete.image);
+                        
+                        //Elimando  las canciones del albumen del Artista
                         Song.findByIdAndRemove(albumDelete._id, (err, songDelete)=> {
                             if(err){
                                 res.status(500).send({
@@ -207,6 +216,9 @@ function deleteArtist(req, res){
                                 });
                             }
                             else{
+                                //Eliminando el File de la Cancion del Album del Artista
+                                if(songDelete.file)
+                                    fs.unlink('./uploads/song/' + songDelete.file);
                                 res.status(200).send({
                                     song: songDelete
                                 });
