@@ -20,11 +20,11 @@ var md_upload = multipart({uploadDir: './uploads/song'});
 api.get('/test-song', md.ensureAuth, SongController.test);
 api.post('/song', md.ensureAuth, SongController.saveSong);
 api.get('/song/:id', md.ensureAuth, SongController.getSong);
-api.get('/songs/:page?', md.ensureAuth, SongController.getSongs);
+api.get('/songs/:id?', md.ensureAuth, SongController.getSongs);
 api.put('/song/:id', md.ensureAuth, SongController.updateSong);
 api.delete('/song/:id', md.ensureAuth,  SongController.deleteSong);
-api.post('/update-file/:id', [md.ensureAuth, md_upload], SongController.uploadFile);
-api.get('/get-imagen.song/:imageFile', SongController.getImagenFile);
+api.post('/update-file.song/:id', [md.ensureAuth, md_upload], SongController.uploadFile);
+api.get('/get-file-song/:songFile', SongController.getSongFile);
 
 
 module.exports = api;

@@ -179,21 +179,25 @@ function getImagenFile(req, res){
 
 function deleteUser(req, res){
     var userId = req.params.id;
-    User.findByIdAndRemove(userId, (err, docs)=> {
+    User.findByIdAndRemove(userId, (err, userDelete)=> {
         if(err){
             res.status(500).send({
                 message: "Error de servidor"
             });
         }else{
-            if(!docs){
+            if(!userDelete){
                 res.status(404).send({
                     message: "No se encontrol el usuario"
                 });
             }
             else
             {
+                //Eliminando la Imgen del Artista
+                if(userDelete.image)
+                    fs.unlink('./uploads/user/' + userDelete.image);
+            
                 res.status(200).send({
-                    user: docs
+                    user: userDelete
                 });
             }
         }

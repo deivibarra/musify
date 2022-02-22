@@ -21,47 +21,41 @@ function test(req, res){
 function saveSong(req, res){
     var song = new Song();
     var params = req.body;
-    var albumId = req.params.id;
 
     //Mapeo de Campos
     song.number = params.number;
     song.name = params.name;
     song.duration = params.duration;
     song.file = '';
+    song.album = params.album;
 
-    Album.findById(albumId, (err, album)=>{
-    if(err){
-        res.status(500).send({message: "Error en la peticion"});
-    }
-    else if(!album){
-        res.status(404).send({message: "No se encontro el album"});
+    if(!song.album){
+        res.status(404).send({message: "No tiene asignado el album"});
     }
     else{
-        song.album = album;
-            if(song.name != null && song.number != null && song.duration != null ){
-                //Guardando el usuario
-                song.save((err,songStored)=>{
-                    if(err){
-                        res.status(500).send({message:"Error guardando el Song"});
-                    }else if(!songStored){
-                        res.status(404).send({message:"Error Song no guardado"});
-                    }
-                    else{
-                        res.status(200).send({song:songStored});
-                    }
-                });
-            }
-            else{
-                res.status(201).send({message: "Todos los campos son obligatorios"});
-            }
+        if(song.name != null && song.number != null && song.duration != null ){
+            //Guardando el usuario
+            song.save((err,songStored)=>{
+                if(err){
+                    res.status(500).send({message:"Error guardando el Song"});
+                }else if(!songStored){
+                    res.status(404).send({message:"Error Song no guardado"});
+                }
+                else{
+                    res.status(200).send({song:songStored});
+                }
+            });
         }
-    })
+        else{
+            res.status(201).send({message: "Todos los campos son obligatorios"});
+        }
+    }
 }
 
 function getSong(req, res)
 {
     var SongId = req.params.id;
-    Song.findById(SongId, (err, song)=>{
+    Song.findById(SongId).populate({path:'album'}).exec((err, song)=>{
     if(err){
         res.status(500).send({message: "Error en la peticion"});
     }
@@ -77,26 +71,47 @@ function getSong(req, res)
 
 function getSongs(req, res)
 {
-    if(req.params.page){
-        var page = req.params.page;
-    }
-    else{
-        var page = 1;
-    }
-
-    var itemPerPage = 4;
+    var albumId = req.params.id;
     
-    Song.find().sort('name').paginate(page, itemPerPage,function(err, songs, total){
-    if(err){
-        res.status(500).send({message: "Error en la peticion"});
-    }
-    else if(!songs){
-        res.status(404).send({message: "No se encontro ningun song"});
+    if(!albumId){
+        var find = Song.find({}).sort('name');
     }
     else{
-            res.status(200).send({totalsong:total,songs:songs});
+        var find = Song.find({album:albumId}).sort('name');
+    }
+    //console.log(find);
+    find.populate({path:'album'}).exec((err, songs)=>{
+        if(err){
+            res.status(500).send({message: "Error en la peticion "});
         }
-    })
+        else if(!songs){
+            res.status(404).send({message: "No se encontro ningun song"});
+        }
+        else{
+                res.status(200).send({songs:songs});
+            }            
+    });
+
+    //if(req.params.page){
+    //    var page = req.params.page;
+    //}
+    //else{
+    //    var page = 1;
+    //}
+
+    //var itemPerPage = 4;
+    
+    //Song.find().sort('name').paginate(page, itemPerPage,function(err, songs, total){
+    //if(err){
+    //    res.status(500).send({message: "Error en la peticion"});
+    //}
+    //else if(!songs){
+    //    res.status(404).send({message: "No se encontro ningun song"});
+    //}
+    //else{
+    //        res.status(200).send({totalsong:total,songs:songs});
+    //    }
+    //})
 }
 
 
@@ -131,15 +146,15 @@ function uploadFile(req,res){
     var file_name = "sin_nombre";
 
     //Extraer nombre de archivo y extension
-    var file_path = req.files.image.path;
+    var file_path = req.files.file.path;
     var file_split = file_path.split('\\');
     var file_name = file_split[2];
     var ext_split = file_name.split('\.');
     var file_ext = ext_split[1];
-    //console.log(file_name);
-    if(file_ext == "mp4" || file_ext == "mov"|| file_ext == "wmv"|| file_ext == "avi")
+    console.log(file_name);
+    if(file_ext == "mp3" || file_ext == "ogg")
     {
-        Song.findByIdAndUpdate(songId,{image: file_name},(err, songUpdate)=>{
+        Song.findByIdAndUpdate(songId,{file: file_name},(err, songUpdate)=>{
             if(err){
                 res.status(500).send({
                     message: "Error de servidor"
@@ -161,16 +176,29 @@ function uploadFile(req,res){
     }
     else{
         res.status(201).send({
-            message: "Formato de imagen invalido solo se permite mp4, mov, wmv y avi"
+            message: "Formato de imagen invalido solo se permite mp3 o ogg"
         });
     }
 
 }
 
-function getImagenFile(req, res){
-    var imagenFile = req.params.imageFile;
-    var pathFile = './uploads/song/' + imagenFile;
+function getSongFile(req,res){
+    var songFile = req.params.songFile;
+    var pathFile = './uploads/song/'+songFile;
+    fs.exists(pathFile,function(exists){
+        if(exists){
+            res.sendFile(path.resolve(pathFile));
+        }else{
+            res.status(404).send({message: "La cancion no se encontro"});
+        }
+    });
+}
 
+/*
+function getFile(req, res){
+    var fileMP3 = req.params.file;
+    var pathFile = './uploads/song/' + fileMP3;
+    console.log(pathFile);
     fs.exists(pathFile, function(exists){
         if(exists){
             res.sendFile(path.resolve(pathFile));
@@ -183,6 +211,7 @@ function getImagenFile(req, res){
     });
 
 }
+*/
 
 function deleteSong(req, res){
     var songId = req.params.id;
@@ -217,5 +246,5 @@ module.exports={
     updateSong,
     deleteSong,
     uploadFile,
-    getImagenFile
+    getSongFile
 }

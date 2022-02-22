@@ -19,10 +19,10 @@ var md_upload = multipart({uploadDir: './uploads/album'});
 api.get('/test-album', md.ensureAuth, AlbumController.test);
 api.post('/album', md.ensureAuth, AlbumController.saveAlbum);
 api.get('/album/:id', md.ensureAuth, AlbumController.getAlbum);
-api.get('/albums/:page?', md.ensureAuth, AlbumController.getAlbums);
+api.get('/albums/:id?', md.ensureAuth, AlbumController.getAlbums);
 api.put('/album/:id', md.ensureAuth, AlbumController.updateAlbum);
 api.delete('/album/:id', md.ensureAuth,  AlbumController.deleteAlbum);
-api.post('/update-imagen/:id', [md.ensureAuth, md_upload], AlbumController.uploadImagen);
+api.post('/update-imagen-album/:id', [md.ensureAuth, md_upload], AlbumController.uploadImagen);
 api.get('/get-imagen.album/:imageFile', AlbumController.getImagenFile);
 
 

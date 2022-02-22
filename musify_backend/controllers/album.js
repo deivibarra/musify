@@ -22,49 +22,43 @@ function test(req, res){
 function saveAlbum(req, res){
     var album = new Album();
     var params = req.body;
-    var artistId = req.params.id;
 
     //Mapeo de Campos
     album.title = params.title;
     album.description = params.description;
     album.year = params.year;
     album.image = '';
+    album.artist = params.artist;
 
-    Artist.findById(artistId, (err, artist)=>{
-        if(err){
-            res.status(500).send({message: "Error en la peticion"});
-        }
-        else if(!artist){
-            res.status(404).send({message: "No se encontro el artista"});
+    if(!album.artist){
+        res.status(404).send({message: "No tiene asignado el artista"});
+    }
+    else{
+        if(album.title != null && album.description != null && album.year != null ){
+            //Guardando el usuario
+            album.save((err,albumStored)=>{
+                if(err){
+                    res.status(500).send({message:"Error guardando el Album"});
+                }else if(!albumStored){
+                    res.status(404).send({message:"Error Album no guardado"});
+                }
+                else{
+                    res.status(200).send({album:albumStored});
+                }
+            });
         }
         else{
-            album.artist = artist;
-            if(album.title != null && album.description != null && album.year != null ){
-                //Guardando el usuario
-                album.save((err,albumStored)=>{
-                    if(err){
-                        res.status(500).send({message:"Error guardando el Album"});
-                    }else if(!albumStored){
-                        res.status(404).send({message:"Error Album no guardado"});
-                    }
-                    else{
-                        res.status(200).send({album:albumStored});
-                    }
-                });
-            }
-            else{
-                res.status(201).send({message: "Todos los campos son obligatorios"});
-            }
+            res.status(201).send({message: "Todos los campos son obligatorios"});
         }
-    })
+    }    
 }
 
 function getAlbum(req, res)
 {
-    var AlbumId = req.params.id;
-    Album.findById(AlbumId, (err, album)=>{
+    var albumId = req.params.id;
+    Album.findById(albumId).populate({path:'artist'}).exec((err, album)=>{
     if(err){
-        res.status(500).send({message: "Error en la peticion"});
+        res.status(500).send({message: "Error en el servidor"});
     }
     else if(!album){
         res.status(404).send({message: "No se encontro el album"});
@@ -78,26 +72,47 @@ function getAlbum(req, res)
 
 function getAlbums(req, res)
 {
-    if(req.params.page){
-        var page = req.params.page;
+    var artistId = req.params.id;
+
+    if(!artistId){
+        var find = Album.find({}).sort('year');
     }
     else{
-        var page = 1;
+        var find = Album.find({artist:artistId}).sort('year');
     }
 
-    var itemPerPage = 4;
+    //if(req.params.page){
+    //    var page = req.params.page;
+    //}
+    //else{
+    //    var page = 1;
+    //}
+
+    //var itemPerPage = 4;
     
-    Album.find().sort('title').paginate(page, itemPerPage,function(err, albums, total){
-    if(err){
-        res.status(500).send({message: "Error en la peticion"});
-    }
-    else if(!album){
-        res.status(404).send({message: "No se encontro ningun album"});
-    }
-    else{
-            res.status(200).send({totalalbum:total,albums:artists});
+    find.populate({path:'artist'}).exec((err, albums)=>{
+        if(err){
+            res.status(500).send({message: "Error en la peticion"});
         }
-    })
+        else if(!albums){
+            res.status(404).send({message: "No se encontro ningun album"});
+        }
+        else{
+                res.status(200).send({albums:albums});
+            }            
+    });
+
+   // Album.find().sort('title').paginate(page, itemPerPage,function(err, albums, total){
+   // if(err){
+   //     res.status(500).send({message: "Error en la peticion"});
+   // }
+   // else if(!album){
+   //     res.status(404).send({message: "No se encontro ningun album"});
+   // }
+   // else{
+   //         res.status(200).send({totalalbum:total,albums:artists});
+   //     }
+   // })
 }
 
 
@@ -137,7 +152,7 @@ function uploadImagen(req,res){
     var file_name = file_split[2];
     var ext_split = file_name.split('\.');
     var file_ext = ext_split[1];
-   // console.log(file_name);
+    console.log(file_name);
     if(file_ext == "png" || file_ext == "gif"|| file_ext == "jpg")
     {
         Album.findByIdAndUpdate(albumId,{image: file_name},(err, albumUpdate)=>{
