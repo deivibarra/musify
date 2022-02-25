@@ -1,0 +1,31 @@
+<div class="col-lg-6" *ngIf="identity && identity.role=='ROLE_ADMIN'">
+    <h1>{{titulo}}</h1>
+    <div *ngIf="alertAddArtist">
+        <div class="alert alert-info">
+          <strong>{{alertAddArtist}}</strong>
+        </div>
+      </div>
+    <form #formArtist="ngForm" (ngSubmit)="onSubmit()">
+        <p>
+            <label>Name</label>
+            <input type="text" #name="ngModel" name="name" [(ngModel)]="artist.name" required class="form-control" />
+            <span *ngIf="!name.valid && name.touched">
+                Name is required
+            </span>
+        </p>
+        
+        <p>
+            <label>Description</label>
+            <textarea #description="ngModel" name="description" [(ngModel)]="artist.description" required class="form-control"></textarea>
+            <span *ngIf="!description.valid && description.touched">
+                Description is required
+            </span>              
+        </p>
+        <input type="submit" value="{{titulo}}" [disabled]="!formArtist.form.valid" class="btn btn-success"/>
+    </form>
+</div>
+
+<div class="col-lg-6" *ngIf="!identity || identity.role!='ROLE_ADMIN'">
+    <h1>Error</h1>
+    <p>Sorry, you don't have permission to this section</p>
+</div>

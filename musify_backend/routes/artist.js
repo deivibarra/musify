@@ -13,7 +13,7 @@ var md = require('../middleware/authenticated');
 //Para manejo de archivo
 var multipart = require('connect-multiparty');
 //Importar middleware para Archivo
-var md_upload = multipart({uploadDir: './uploads/artist'});
+var md_upload = multipart({uploadDir: './uploads/artists'});
 
 
 
@@ -22,9 +22,9 @@ api.post('/artist', md.ensureAuth, ArtistController.saveArtist);
 api.get('/artist/:id', md.ensureAuth, ArtistController.getArtist);
 api.get('/artists/:page?', md.ensureAuth, ArtistController.getArtists);
 api.put('/artist/:id', md.ensureAuth, ArtistController.updateArtist);
-api.delete('/artist/:id', md.ensureAuth,  ArtistController.deleteArtist);
-api.post('/update-imagen-artist/:id', [md.ensureAuth, md_upload], ArtistController.uploadImagen);
-api.get('/get-imagen-artist/:imageFile', ArtistController.getImagenFile);
+api.delete('/artist/:id', md.ensureAuth,  ArtistController.deleteArtist); 
+api.post('/upload-image-artist/:id', [md.ensureAuth, md_upload], ArtistController.uploadImagen);
+api.get('/get-image-artist/:imageFile', ArtistController.getImagenFile);
 
-
+ 
 module.exports = api;

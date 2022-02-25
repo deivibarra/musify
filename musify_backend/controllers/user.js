@@ -32,7 +32,7 @@ function saveUser(req, res){
     if(params.password){
         bcrypt.hash(params.password,null,null,function(err,hash){
             user.password = hash;
-            console.log(user);
+           // console.log(user);
             if(user.name != null && user.surname != null && user.email != null){
                 //Guardando el usuario
                 user.save((err,userStore)=>{
@@ -129,7 +129,7 @@ function uploadImagen(req,res){
     var file_name = file_split[2];
     var ext_split = file_name.split('\.');
     var file_ext = ext_split[1];
-    console.log(file_name);
+    //console.log(file_name);
     if(file_ext == "png" || file_ext == "gif"|| file_ext == "jpg")
     {
         User.findByIdAndUpdate(userId,{image: file_name},(err, userUpdate)=>{
@@ -194,7 +194,7 @@ function deleteUser(req, res){
             {
                 //Eliminando la Imgen del Artista
                 if(userDelete.image)
-                    fs.unlink('./uploads/user/' + userDelete.image);
+                    fs.unlink('./uploads/users/' + userDelete.image);
             
                 res.status(200).send({
                     user: userDelete

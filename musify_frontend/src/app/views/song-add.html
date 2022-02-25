@@ -1,0 +1,38 @@
+<div class="col-lg-6" *ngIf="identity && identity.role=='ROLE_ADMIN'">
+    <h1>{{titulo}}</h1>
+    <div *ngIf="alertSong">
+        <div class="alert alert-info">
+          <strong>{{alertSong}}</strong>
+        </div>
+      </div>
+    <form #formSong="ngForm" (ngSubmit)="onSubmit()">
+        <p>
+            <label>Number</label>
+            <input type="text" #number="ngModel" name="number" [(ngModel)]="song.number" required class="form-control" />
+            <span *ngIf="!number.valid && number.touched">
+                Number is required
+            </span>
+        </p>
+        <p>
+            <label>Name</label>
+            <input type="text" #name="ngModel" name="name" [(ngModel)]="song.name" required class="form-control" />
+            <span *ngIf="!name.valid && name.touched">
+                Name is required
+            </span>
+        </p>
+        <p>
+            <label>Duration</label>
+            <input type="text" #duration="ngModel" name="duration" [(ngModel)]="song.duration" required class="form-control" />
+            <span *ngIf="!duration.valid && duration.touched">
+                Duration is required
+            </span>
+        </p>
+
+        <input type="submit" value="{{titulo}}" [disabled]="!formSong.form.valid" class="btn btn-success"/>
+    </form>
+</div>
+
+<div class="col-lg-6" *ngIf="!identity || identity.role!='ROLE_ADMIN'">
+    <h1>Error</h1>
+    <p>Sorry, you don't have permission to this section</p>
+</div>

@@ -11,8 +11,8 @@ mongoose.Promise=global.Promise;
 mongoose.connect('mongodb://127.0.0.1:27017/musifydb',(err, res)=>{
     if(err)
     {
-        throw err;
         console.log(err);
+        throw err;
     }
     else{
         console.log("Conexion a base de datos exitosa");

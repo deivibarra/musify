@@ -1,0 +1,59 @@
+<div *ngIf="artist && identity" class="album-box">
+    <div id="album-head-card">
+        <div class="image" *ngIf="album.image && album.image !==null">
+            <img src="{{url+'get-image-album/'+album.image}}"/>
+        </div>
+        <div class="data">
+            <h1>{{album.title}}</h1>
+            <h3>
+                <a [routerLink]="['/detail-artist',artist._id]">
+                    {{artist.name}}
+                </a>
+            </h3>
+            <p>{{album.year}}</p>
+            <p class="description">{{album.description}}</p>
+
+            <a *ngIf="identity.role == 'ROLE_ADMIN'" [routerLink]="['/add-song',album._id]" class="btn btn-default">Add Song</a>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div id="gellery-song" *ngIf="songs">
+        <ul id="song-list">
+            <li *ngFor="let song of songs" class="song-item">
+                <div class="title">
+                    <a class="btn btn-success" (click)="startPlayer(song)">
+                        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                    </a>
+
+                    {{song.number + '. '+ song.name + ' - '+song.duration}}
+
+                    <div class="buttons" *ngIf="identity.role == 'ROLE_ADMIN'">
+                        <a [routerLink]="['/edit-song',song._id]" class="btn btn-warning">Edit</a>
+                        <!--<a (click)="onDeleteConfirm(song._id)" class="btn btn-danger">Delete</a>-->
+                        <a (click)="onDeleteConfirm(song._id)" data-toggle="modal" data-target="#modalDelete" class="btn btn-danger">Delete</a>
+                    </div>
+
+                    <!--Modal para eliminar cancion-->
+                    <div id="modalDelete" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-body">
+                              <h4>Are you sure delete song? </h4>
+                            </div>
+                            <div class="modal-footer">
+                              <button (click)="onDeleteSong(confirm_to_delete)" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button>
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    
+                    <div class="clearfix"></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+</div>

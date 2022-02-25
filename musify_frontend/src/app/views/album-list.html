@@ -1,0 +1,30 @@
+<div *ngIf="identity" class="artist-box">
+    <div id="artist-head-card">
+        <div class="data">
+            <h1>{{titulo}}</h1>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div *ngIf="alertAlbum">
+        <div class="alert alert-info">
+          <strong>{{alertAlbum}}</strong>
+        </div>
+      </div>
+
+    <div id="gallery-albums" *ngIf="albums">
+        <!--LISTAR LOS ALBUMS-->
+        <ul class="albums-list">
+            <li *ngFor="let album of albums" class="col-lg-4 album-item">
+                <div class="album-image">
+                    <img src="{{url+'get-image-album/'+album.image}}"/>
+                </div>
+                <div class="album-title">
+                    <p>
+                        <a [routerLink]="['/detail-album',album._id]">{{album.title}}</a>
+                    </p>
+                </div>
+        </ul>
+    </div>
+</div>

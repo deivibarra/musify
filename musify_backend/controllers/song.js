@@ -183,8 +183,9 @@ function uploadFile(req,res){
 }
 
 function getSongFile(req,res){
+    //console.log(req.params);
     var songFile = req.params.songFile;
-    var pathFile = './uploads/song/'+songFile;
+    var pathFile = './uploads/songs/'+songFile;
     fs.exists(pathFile,function(exists){
         if(exists){
             res.sendFile(path.resolve(pathFile));
@@ -229,7 +230,7 @@ function deleteSong(req, res){
             else
             {
                 if(songDelete.file)
-                    fs.unlink('./uploads/song/' + songDelete.file);
+                    fs.unlink('./uploads/songs/' + songDelete.file);
                 res.status(200).send({
                     song: songDelete
                 });

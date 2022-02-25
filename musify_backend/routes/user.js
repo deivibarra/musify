@@ -22,8 +22,8 @@ api.post('/register', UserController.saveUser);
 api.post('/login', UserController.loginUser);
 api.put('/update-user/:id', md.ensureAuth, UserController.updateUser);
 api.delete('/delete-user/:id', md.ensureAuth,  UserController.deleteUser);
-api.post('/update-imagen/:id', [md.ensureAuth, md_upload], UserController.uploadImagen);
-api.get('/get-imagen.user/:imageFile', UserController.getImagenFile);
+api.post('/upload-image-user/:id', [md.ensureAuth, md_upload], UserController.uploadImagen);
+api.get('/get-image-user/:imageFile', UserController.getImagenFile);
 
 
 module.exports = api;

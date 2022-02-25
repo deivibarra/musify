@@ -124,7 +124,7 @@ function uploadImagen(req,res){
     var file_name = file_split[2];
     var ext_split = file_name.split('\.');
     var file_ext = ext_split[1];
-    console.log(file_name);
+    //console.log(file_name);
     if(file_ext == "png" || file_ext == "gif"|| file_ext == "jpg")
     {
         Artist.findByIdAndUpdate(artistId,{image: file_name},(err, artistUpdate)=>{
@@ -157,7 +157,7 @@ function uploadImagen(req,res){
 
 function getImagenFile(req, res){
     var imagenFile = req.params.imageFile;
-    var pathFile = './uploads/artist/' + imagenFile;
+    var pathFile = './uploads/artists/' + imagenFile;
 
     fs.exists(pathFile, function(exists){
         if(exists){
@@ -190,7 +190,7 @@ function deleteArtist(req, res){
             {
                 //Eliminando la Imgen del Artista
                 if(artistDelete.image)
-                    fs.unlink('./uploads/artist/' + artistDelete.image);
+                    fs.unlink('./uploads/artists/' + artistDelete.image);
                 //Elimando los albumen del Artista
                 Album.findByIdAndRemove(artistDelete._id, (err, albumDelete)=> {
                 if(err){
@@ -201,7 +201,7 @@ function deleteArtist(req, res){
                     if(albumDelete){
                         //Eliminando la Imgen del Album del Artista
                         if(albumDelete.image)
-                            fs.unlink('./uploads/album/' + albumDelete.image);
+                            fs.unlink('./uploads/albums/' + albumDelete.image);
                         
                         //Elimando  las canciones del albumen del Artista
                         Song.findByIdAndRemove(albumDelete._id, (err, songDelete)=> {
@@ -218,7 +218,7 @@ function deleteArtist(req, res){
                             else{
                                 //Eliminando el File de la Cancion del Album del Artista
                                 if(songDelete.file)
-                                    fs.unlink('./uploads/song/' + songDelete.file);
+                                    fs.unlink('./uploads/songs/' + songDelete.file);
                                 res.status(200).send({
                                     song: songDelete
                                 });
